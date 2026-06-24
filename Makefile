@@ -14,7 +14,7 @@ OBJ_DIR = obj
 BIN_DIR = bin
 
 # Nome do executável final
-TARGET = $(BIN_DIR)/tp3
+TARGET = $(BIN_DIR)/tp3.out
 
 # Encontra todos os arquivos .cpp na pasta src
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
@@ -35,7 +35,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Regra para limpar o projeto (remove os .o e o executável)
 clean:
-	rm -f $(OBJ_DIR)/*.o $(TARGET)
+	rm -f $(OBJ_DIR)/*.o $(BIN_DIR)/tp3.out
 
 # Declara que 'all' e 'clean' não são arquivos reais
 .PHONY: all clean

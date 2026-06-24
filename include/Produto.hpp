@@ -19,16 +19,17 @@ public:
     ~Produto();
 
     //getters
-    int getId();
-    std::string getNome();
-    double getPreco();
-    int getQuantidade();
-    std::string getCategoria();
-    std::string getMarca();
-    std::string getCondicao();
+    int getId() const;
+    std::string getNome() const;
+    double getPreco() const;
+    int getQuantidade() const;
+    std::string getCategoria() const;
+    std::string getMarca() const;
+    std::string getCondicao() const;
 
     //other methods
     void compra(int quantidade);
+    void adiciona_estoque(int quantidade);
 
 
 };

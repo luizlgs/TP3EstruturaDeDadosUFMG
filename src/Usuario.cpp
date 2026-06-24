@@ -8,10 +8,9 @@ _nome(nome), _idade(idade), _cidade(cidade), _estado(estado), _nacionalidade(nac
     _contador++;
 }
 
-Usuario::Usuario() : _nome(""), _idade(0), _cidade(""), _estado(""), _nacionalidade("") {
-    _id = _contador;
-    _contador++;
-}
+Usuario::Usuario() : _nome(""), _idade(0), _cidade(""), _estado(""), _nacionalidade("") {}
+
+Usuario::~Usuario(){}
 
 int Usuario::getId() const {
     return _id;

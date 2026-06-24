@@ -9,37 +9,37 @@ _nome(nome), _preco(preco), _quantidade(quantidade), _categoria(categoria), _mar
 }
 
 Produto::Produto() : _nome(""), _preco(0.0), _quantidade(0), _categoria(""), _marca(""), _condicao("") {
-    _id = _contador;
-    _contador++;
 }
+
+Produto::~Produto(){}
 
 //getters
 
-int Produto::getId() {
+int Produto::getId() const{
     return _id;
 }
 
-std::string Produto::getNome() {
+std::string Produto::getNome() const{
     return _nome;
 }
 
-double Produto::getPreco() {
+double Produto::getPreco() const{
     return _preco;
 }
 
-int Produto::getQuantidade() {
+int Produto::getQuantidade() const{
     return _quantidade;
 }
 
-std::string Produto::getCategoria() {
+std::string Produto::getCategoria() const{
     return _categoria;
 }
 
-std::string Produto::getMarca() {
+std::string Produto::getMarca() const{
     return _marca;
 }
 
-std::string Produto::getCondicao() {
+std::string Produto::getCondicao() const{
     return _condicao;
 }
 
@@ -51,4 +51,8 @@ void Produto::compra(int quantidade) {
     } else {
         throw std::invalid_argument("Quantidade insuficiente em estoque.");
     }
+}
+
+void Produto::adiciona_estoque(int quantidade){
+    _quantidade += quantidade;
 }
