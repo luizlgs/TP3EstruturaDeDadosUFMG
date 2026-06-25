@@ -4,6 +4,7 @@
 #include "../include/Reposicao.hpp"
 #include "../include/Produto.hpp"
 #include "../include/Usuario.hpp"
+#include "../include/Pair.hpp"
 #include <string>
 #include <bits/stdc++.h>
 #include <cstdlib>
@@ -14,10 +15,33 @@
 class Sistema
 {
 private:
-    Usuario **_usuarios;
-    Produto **_produtos;
-    Compra **_compras;
-    Reposicao **_reposicoes;
+    Usuario **_usuarios; // id, nome, idade, cidade, estado, nacionalidade
+    Pair *_ususarios_id;
+    Pair *_usuarios_nome;
+    Pair *_usuarios_idade;
+    Pair *_usuarios_cidade;
+    Pair *_usuarios_estado;
+    Pair *_usuarios_nacionalidade;
+
+    Produto **_produtos; // id, nome, categoria, marca, condicao
+    Pair *_produtos_id;
+    Pair *_produtos_nome;
+    Pair *_produtos_marca;
+    Pair *_produtos_condicao;
+
+
+    Compra **_compras; // id, timestamp, id_usuario, id_produto
+    Pair *_compras_id;
+    Pair *_compras_id_usuario;
+    Pair *_compras_id_produto;
+
+
+    Reposicao **_reposicoes; // id, timestamp, id_produto
+    Pair *_reposicoes_id;
+    Pair *_compras_timestamp;
+    Pair *_id_produto;
+
+
     int _numUsuarios;
     int _numProdutos;
     int _numCompras;
@@ -64,6 +88,8 @@ public:
     //coleta filtros nas consultadas que demandam diferentes atributos
     std::string **coletaFiltros(std::stringstream& ss);
 
+    //algoritmo de pesquisa binaria baseado nos pair de um atributo
+    int pesquisaPair(Pair *pairs, int valor, int inicio, int final);
 
 };
 

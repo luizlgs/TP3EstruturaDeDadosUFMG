@@ -365,3 +365,7 @@ std::string **Sistema::coletaFiltros(std::stringstream& ss){
 
     return valores;
 }
+
+int Sistema::pesquisaPair(Pair *pairs, int valor, int inicio, int final) {
+    
+}
