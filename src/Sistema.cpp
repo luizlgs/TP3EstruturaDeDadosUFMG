@@ -20,6 +20,15 @@ bool Sistema::isDigit(std::string s){
     return true;
 }
 
+int Sistema::isIn(int idElemento, int arr[], int tamarr){ //retorna -1 se nao estiver no vetor e o indice no vetor se estiver (indice da primeira aparição)
+    for(int i=0; i<tamarr; i++){
+        if(idElemento == arr[i]){
+            return i;
+        }
+    }
+    return -1;
+}
+
 //getters
 Usuario **Sistema::getUsuarios() const {
     return _usuarios;
@@ -41,14 +50,13 @@ int Sistema::getNumProdutos() const {
     return _numProdutos;
 }
 
-//other methods
 void Sistema::insertionSortInt(int *ids, int *qtds, int n) {
-    for(int a = 1; a < n; a++){
-        int keyId = ids[a], keyQtd = qtds[a], b = a - 1;
-        while(b >= 0 && ids[b] > keyId){
-            ids[b+1] = ids[b]; qtds[b+1] = qtds[b]; b--;
+    for(int i = 1; i < n; i++){
+        int keyId = ids[i], keyQtd = qtds[i], j = i - 1;
+        while(j >= 0 && ids[j] > keyId){
+            ids[j+1] = ids[j]; qtds[j+1] = qtds[j]; j--;
         }
-        ids[b+1] = keyId; qtds[b+1] = keyQtd;
+        ids[j+1] = keyId; qtds[j+1] = keyQtd;
     }
 }
 
@@ -96,6 +104,7 @@ void Sistema::adicionarCompra(Compra *compra) {
             }
         }
     }
+    _usuarios[compra->getIdUsuario()]->adicionarProduto(compra->getNumProdutos());
 }
 
 void Sistema::adicionarReposicao(Reposicao *reposicao) {
@@ -142,29 +151,32 @@ void Sistema::consultaUsuarios(std::string *nome_atributos, std::string *valor_a
             _usuarios[i]->getIdade() << " " << _usuarios[i]->getCidade() << " " << _usuarios[i]->getEstado() << " " 
             << _usuarios[i]->getNacionalidade() << std::endl;
 
-            int idUsuario = _usuarios[i]->getId();
-            int *idsProd = new int[_numCompras * 10 + 1];
-            int *qtdsProd = new int[_numCompras * 10 + 1];
-            int numProd = 0;
+            int idUsuario = _usuarios[i]->getId(), quantidade_prod = _usuarios[i]->getQtdProdutos() > 0 ? _usuarios[i]->getQtdProdutos() : 1;
+            int *idsProd = new int[quantidade_prod];
+            int *qtdsProd = new int[quantidade_prod];
+            int numProd = 0; //indice de acesso em idsPro e qtsProd
 
-            for(int c = 0; c < _numCompras; c++){
-                if(_compras[c]->getIdUsuario() != idUsuario) continue;
-                for(int k = 0; k < _compras[c]->getNumProdutos(); k++){
-                    int idP = _compras[c]->getIdProdutos()[k];
-                    int qtd = _compras[c]->getQuantidades()[k];
-                    bool achou = false;
-                    for(int m = 0; m < numProd; m++){
-                        if(idsProd[m] == idP){ qtdsProd[m] += qtd; achou = true; break; }
+            for (int j = 0; j < _numCompras; j++){
+                if (_compras[j]->getIdUsuario() != idUsuario)
+                    continue;
+                for (int k = 0; k < _compras[j]->getNumProdutos(); k++){
+                    int produto_ja_existe = isIn(_compras[j]->getIdProdutos()[k], idsProd, numProd); // guarda o indice se o elemento esta no array
+                    if (produto_ja_existe == -1){ // retorna -1 se nao estiver no array
+                        idsProd[numProd] = _compras[j]->getIdProdutos()[k];
+                        qtdsProd[numProd] = _compras[j]->getQuantidades()[k];
+                        numProd++;
                     }
-                    if(!achou){ idsProd[numProd] = idP; qtdsProd[numProd] = qtd; numProd++; }
+                    else{
+                        qtdsProd[produto_ja_existe] += _compras[j]->getQuantidades()[k];
+                    }
                 }
             }
 
             if(numProd > 0){
                 insertionSortInt(idsProd, qtdsProd, numProd);
-                for(int m = 0; m < numProd; m++){
-                    std::cout << "produto_" << m+1 << " " << idsProd[m] << " " << qtdsProd[m];
-                    if(m+1 != numProd) std::cout << " ";
+                for(int j = 0; j<numProd; j++){
+                    std::cout << "produto_" << j+1 << " " << idsProd[j] << " " << qtdsProd[j];
+                    if(j+1 != numProd) std::cout << " ";
                 }
                 std::cout << std::endl;
             }
@@ -203,24 +215,24 @@ void Sistema::consultaProdutos(std::string *nome_atributos, std::string *valor_a
             int *qtdsUsuario = new int[_numCompras + 1];
             int numUsuarios = 0;
 
-            for(int c = 0; c < _numCompras; c++){
-                for(int k = 0; k < _compras[c]->getNumProdutos(); k++){
-                    if(_compras[c]->getIdProdutos()[k] != idProduto) continue;
-                    int idU = _compras[c]->getIdUsuario();
-                    int qtd = _compras[c]->getQuantidades()[k];
-                    bool achou = false;
-                    for(int m = 0; m < numUsuarios; m++){
-                        if(idsUsuario[m] == idU){ qtdsUsuario[m] += qtd; achou = true; break; }
+            for(int j = 0; j < _numCompras; j++){
+                    int pos_produto_compras = isIn(idProduto, _compras[j]->getIdProdutos(), _compras[j]->getNumProdutos());
+                    if(pos_produto_compras == -1){continue;}
+                    int pos_usuario_idsUsuario = isIn(_compras[j]->getIdUsuario(), idsUsuario, numUsuarios);
+                    if(pos_usuario_idsUsuario == -1){
+                        idsUsuario[numUsuarios] = _compras[j]->getIdUsuario();
+                        qtdsUsuario[numUsuarios] = _compras[j]->getQuantidades()[pos_produto_compras];
+                        numUsuarios++;
+                        continue;
                     }
-                    if(!achou){ idsUsuario[numUsuarios] = idU; qtdsUsuario[numUsuarios] = qtd; numUsuarios++; }
-                }
+                    qtdsUsuario[pos_usuario_idsUsuario] += _compras[j]->getQuantidades()[pos_produto_compras];
             }
 
             if(numUsuarios > 0){
                 insertionSortInt(idsUsuario, qtdsUsuario, numUsuarios);
-                for(int m = 0; m < numUsuarios; m++){
-                    std::cout << "usuario_" << m+1 << " " << idsUsuario[m] << " " << qtdsUsuario[m];
-                    if(m+1 != numUsuarios) std::cout << " ";
+                for(int j = 0; j < numUsuarios; j++){
+                    std::cout << "usuario_" << j+1 << " " << idsUsuario[j] << " " << qtdsUsuario[j];
+                    if(j+1 != numUsuarios) std::cout << " ";
                 }
                 std::cout << std::endl;
             }
@@ -305,8 +317,6 @@ void Sistema::consultaReposicoes(std::string *nome_atributos, std::string *valor
 }
 
 
-
-
 //redimensionamento de vetores 
 //-------------------------------------------------------------------------------------------
 int *Sistema::redimensionarVetorInt(int *vetor, int numElementos) {
@@ -328,3 +338,30 @@ std::string *Sistema::redimensionarVetorString(std::string *vetor, int numElemen
 }
 
 //-------------------------------------------------------------------------------------------
+
+std::string **Sistema::coletaFiltros(std::stringstream& ss){
+    int tam_atributos = TAM_MAX_INICIAL_VETORES, num_atributos = 0;
+    std::string *nome_atributos = new std::string[tam_atributos];  // nome dos atributos requisitados
+    std::string *valor_atributos = new std::string[tam_atributos]; // respectivos valores
+
+    std::string atributo;
+    while (ss >> atributo){
+        std::string valor;
+        ss >> valor;
+        if (num_atributos == tam_atributos){
+            nome_atributos = redimensionarVetorString(nome_atributos, num_atributos);
+            valor_atributos = redimensionarVetorString(valor_atributos, num_atributos);
+            tam_atributos += 10; // aumenta o valor de 10 em 10 para evitar desperdicio de memoria e custo computacional
+        }
+        nome_atributos[num_atributos] = atributo;
+        valor_atributos[num_atributos] = valor;
+        num_atributos++;
+    }
+    std::string **valores = new std::string*[3];
+    valores[0] = nome_atributos;
+    valores[1] = valor_atributos;
+    valores[2] = new std::string[1];
+    valores[2][0] = std::to_string(num_atributos);
+
+    return valores;
+}

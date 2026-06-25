@@ -10,6 +10,7 @@ private:
     std::string _nome;
     int _idade;
     std::string _cidade, _estado, _nacionalidade;
+    int _qtd_produtos;
 
     
 public:
@@ -24,6 +25,10 @@ public:
     std::string getCidade() const;
     std::string getEstado() const;
     std::string getNacionalidade() const;
+    int getQtdProdutos() const;
+
+    //other methods
+    void adicionarProduto(int qtd);
     
 };
 

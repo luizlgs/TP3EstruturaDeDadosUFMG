@@ -3,12 +3,12 @@
 int Usuario::_contador = 0;
 
 Usuario::Usuario(std::string nome, int idade, std::string cidade, std::string estado, std::string nacionalidade) : 
-_nome(nome), _idade(idade), _cidade(cidade), _estado(estado), _nacionalidade(nacionalidade) {
+_nome(nome), _idade(idade), _cidade(cidade), _estado(estado), _nacionalidade(nacionalidade), _qtd_produtos(0) {
     _id = _contador;
     _contador++;
 }
 
-Usuario::Usuario() : _nome(""), _idade(0), _cidade(""), _estado(""), _nacionalidade("") {}
+Usuario::Usuario() : _nome(""), _idade(0), _cidade(""), _estado(""), _nacionalidade(""), _qtd_produtos(0) {}
 
 Usuario::~Usuario(){}
 
@@ -34,4 +34,14 @@ std::string Usuario::getEstado() const {
 
 std::string Usuario::getNacionalidade() const {
     return _nacionalidade;
+}
+
+int Usuario::getQtdProdutos() const{
+    return _qtd_produtos;
+}
+
+
+//other methods
+void Usuario::adicionarProduto(int qtd){
+    _qtd_produtos+=qtd;
 }

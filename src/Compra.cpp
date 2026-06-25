@@ -41,3 +41,4 @@ int *Compra::getQuantidades() const {
 int Compra::getNumProdutos() const {
     return _numprodutos;
 }
+
