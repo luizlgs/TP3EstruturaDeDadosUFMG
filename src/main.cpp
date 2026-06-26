@@ -42,8 +42,8 @@ int main(){
             int id_atual, quantidade_atual;
             for (int i = 0; ss >> id_atual >> quantidade_atual; i++, numprodutos++){
                 if (numprodutos == tamvetores){
-                    ids_produtos = sistema.redimensionarVetorInt(ids_produtos, numprodutos);
-                    quantidades = sistema.redimensionarVetorInt(quantidades, numprodutos);
+                    sistema.redimensionar<int>(ids_produtos, numprodutos);
+                    sistema.redimensionar<int>(quantidades, numprodutos);
                     tamvetores += 10; // aumenta o valor de 10 em 10 para evitar desperdicio de memoria e custo computacional
                 }
                 ids_produtos[i] = id_atual, quantidades[i] = quantidade_atual;
@@ -65,7 +65,7 @@ int main(){
             int id_atual, quantidade_atual;
             for (int i = 0; ss >> id_atual >> quantidade_atual && validacao_compra; i++, numprodutos++) {
                 // busca o produto pelo id para verificar se a quantidade é valida de acordo com o estoque
-                for (int j = 0; j < sistema.getNumProdutos(); j++){
+                for (int j = 0; j < *sistema.getNumProdutos(); j++){
                     if (sistema.getProdutos()[j]->getId() == id_atual){
                         if (quantidade_atual > sistema.getProdutos()[j]->getQuantidade())
                             validacao_compra = false;
@@ -74,8 +74,8 @@ int main(){
                 }
 
                 if (numprodutos == tamvetores){
-                    ids_produtos = sistema.redimensionarVetorInt(ids_produtos, numprodutos);
-                    quantidades = sistema.redimensionarVetorInt(quantidades, numprodutos);
+                    sistema.redimensionar<int>(ids_produtos, numprodutos);
+                    sistema.redimensionar<int>(quantidades, numprodutos);
                     tamvetores += 10;
                 }
                 ids_produtos[i] = id_atual;

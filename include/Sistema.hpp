@@ -12,11 +12,9 @@
 #include <sstream>
 #define TAM_MAX_INICIAL_VETORES 20
 
-class Sistema
-{
+class Sistema {
 private:
     Usuario **_usuarios; // id, nome, idade, cidade, estado, nacionalidade
-    Pair *_ususarios_id;
     Pair *_usuarios_nome;
     Pair *_usuarios_idade;
     Pair *_usuarios_cidade;
@@ -24,29 +22,26 @@ private:
     Pair *_usuarios_nacionalidade;
 
     Produto **_produtos; // id, nome, categoria, marca, condicao
-    Pair *_produtos_id;
     Pair *_produtos_nome;
     Pair *_produtos_marca;
     Pair *_produtos_condicao;
 
 
     Compra **_compras; // id, timestamp, id_usuario, id_produto
-    Pair *_compras_id;
     Pair *_compras_id_usuario;
     Pair *_compras_id_produto;
 
 
     Reposicao **_reposicoes; // id, timestamp, id_produto
-    Pair *_reposicoes_id;
     Pair *_compras_timestamp;
     Pair *_id_produto;
 
 
-    int _numUsuarios;
-    int _numProdutos;
-    int _numCompras;
-    int _numReposicoes;
-
+    int *_numUsuarios;
+    int *_numProdutos;
+    int *_numCompras;
+    int *_numReposicoes;
+    
 public:
     Sistema();
     ~Sistema();
@@ -56,7 +51,7 @@ public:
     Produto **getProdutos() const;
     Compra **getCompras() const;
     Reposicao **getReposicoes() const;
-    int getNumProdutos() const;
+    int *getNumProdutos() const;
 
 
     //metodos de adicao de objetos no sistema
@@ -65,9 +60,16 @@ public:
     void adicionarCompra(Compra *compra);
     void adicionarReposicao(Reposicao *reposicao);
 
-    //algoritmo de redimimensionamento para ter vetores de tamanhos dinamicos
-    int *redimensionarVetorInt(int *vetor, int numElementos);
-    std::string *redimensionarVetorString(std::string *vetor, int numElementos);
+    //algoritmo de redimensionamento para ter vetores de tamanhos dinamicos
+    template <typename R>
+    R redimensionar(R *vetor, int numElementos){
+    R *novoVetor = new R[numElementos+10];
+        for(int i = 0; i < numElementos; i++) {
+            novoVetor[i] = vetor[i];
+        }
+        delete[] vetor;
+        vetor = novoVetor;
+    }
 
     //funcao para verificar se e um digito
     bool isDigit(std::string s);
@@ -88,8 +90,10 @@ public:
     //coleta filtros nas consultadas que demandam diferentes atributos
     std::string **coletaFiltros(std::stringstream& ss);
 
-    //algoritmo de pesquisa binaria baseado nos pair de um atributo
-    int pesquisaPair(Pair *pairs, int valor, int inicio, int final);
+    //algoritmo de pesquisa binaria baseado nos pairs de um atributo (retorna o intervalo de pair que possuem o valor procurado)
+    int *pesquisaPair(Pair *pairs, std::string valor, int inicio, int final);
+    //algoritmo para adicionar uma pair na lista de forma ordenada
+    void adicionaPair(Pair *pair, Pair pair_adicionado, int *tamPair);
 
 };
 

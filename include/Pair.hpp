@@ -1,17 +1,26 @@
 #ifndef PAIR_HPP
 #define PAIR_HPP
+#include <string>
 
 class Pair {
 private:
     int _indice;
-    int _valor;
+    std::string _valor;
 public:
-    Pair(int indice, int valor);
+    Pair(int indice, std::string valor);
+    Pair();
     ~Pair();
+
+    bool operator<(const Pair &p) const{
+        if(this->_valor < p.getValor()){
+            return true;
+        }
+        return false;
+    }
 
     //getters
     int getIndice() const;
-    int getValor() const;
+    std::string getValor() const;
 };
 
 

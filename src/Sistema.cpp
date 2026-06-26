@@ -2,7 +2,7 @@
 
 Sistema::Sistema() : 
 _usuarios(nullptr), _produtos(nullptr), _compras(nullptr), _reposicoes(nullptr), 
-_numUsuarios(0), _numProdutos(0), _numCompras(0), _numReposicoes(0) {}
+_numUsuarios(new int(0)), _numProdutos(new int(0)), _numCompras(new int(0)), _numReposicoes(new int(0)) {}
 
 Sistema::~Sistema() {
     delete[] _usuarios;
@@ -46,7 +46,7 @@ Reposicao **Sistema::getReposicoes() const {
     return _reposicoes;
 }
 
-int Sistema::getNumProdutos() const {
+int *Sistema::getNumProdutos() const {
     return _numProdutos;
 }
 
@@ -62,76 +62,77 @@ void Sistema::insertionSortInt(int *ids, int *qtds, int n) {
 
 
 void Sistema::adicionarUsuario(Usuario *usuario) {
-    Usuario **novoArray = new Usuario*[_numUsuarios + 1];
-    for (int i=0; i<_numUsuarios; i++) {
+    Usuario **novoArray = new Usuario*[*_numUsuarios + 1];
+    for (int i=0; i<*_numUsuarios; i++) {
         novoArray[i] = _usuarios[i];
     }
-    novoArray[_numUsuarios] = usuario;
+    novoArray[*_numUsuarios] = usuario;
 
     delete[] _usuarios;
     _usuarios = novoArray;
-    _numUsuarios++;
+    (*_numUsuarios)++;
 }
 
 void Sistema::adicionarProduto(Produto *produto) {
-    Produto **novoArray = new Produto*[_numProdutos + 1];
-    for (int i=0; i<_numProdutos; i++) {
+    Produto **novoArray = new Produto*[*_numProdutos + 1];
+    for (int i=0; i<*_numProdutos; i++) {
         novoArray[i] = _produtos[i];
     }
-    novoArray[_numProdutos] = produto;
+    novoArray[*_numProdutos] = produto;
     delete[] _produtos;
     _produtos = novoArray;
-    _numProdutos++;
+    (*_numProdutos)++;
 }
 
 void Sistema::adicionarCompra(Compra *compra) {
-    Compra **novoArray = new Compra*[_numCompras + 1];
-    for (int i=0; i<_numCompras; i++) {
+    Compra **novoArray = new Compra*[*_numCompras + 1];
+    for (int i=0; i<*_numCompras; i++) {
         novoArray[i] = _compras[i];
     }
-    novoArray[_numCompras] = compra;
+    novoArray[*_numCompras] = compra;
     delete[] _compras;
     _compras = novoArray;
-    _numCompras++;
+    (*_numCompras)++;
 
     for(int k = 0; k < compra->getNumProdutos(); k++){
-    int idProd = compra->getIdProdutos()[k];
-    int qtd = compra->getQuantidades()[k];
-    for(int i = 0; i < _numProdutos; i++){
-        if(_produtos[i]->getId() == idProd){
-            _produtos[i]->compra(qtd);
-            break;
+        int idProd = compra->getIdProdutos()[k];
+        int qtd = compra->getQuantidades()[k];
+        for(int i = 0; i < *_numProdutos; i++){
+            if(_produtos[i]->getId() == idProd){
+                _produtos[i]->compra(qtd);
+                break;
+                }
             }
-        }
     }
+
     _usuarios[compra->getIdUsuario()]->adicionarProduto(compra->getNumProdutos());
 }
 
 void Sistema::adicionarReposicao(Reposicao *reposicao) {
-    Reposicao **novoArray = new Reposicao*[_numReposicoes + 1];
-    for (int i=0; i<_numReposicoes; i++) {
+    Reposicao **novoArray = new Reposicao*[*_numReposicoes + 1];
+    for (int i=0; i<*_numReposicoes; i++) {
         novoArray[i] = _reposicoes[i];
     }
-    novoArray[_numReposicoes] = reposicao;
+    novoArray[*_numReposicoes] = reposicao;
     delete[] _reposicoes;
     _reposicoes = novoArray;
-    _numReposicoes++;
+    (*_numReposicoes)++;
 
     for(int k = 0; k < reposicao->getNumProdutos(); k++){
-    int idProd = reposicao->getIdProdutos()[k];
-    int qtd = reposicao->getQuantidades()[k];
-    for(int i = 0; i < _numProdutos; i++){
-        if(_produtos[i]->getId() == idProd){
-            _produtos[i]->adiciona_estoque(qtd);
-            break;
+        int idProd = reposicao->getIdProdutos()[k];
+        int qtd = reposicao->getQuantidades()[k];
+        for(int i = 0; i < *_numProdutos; i++){
+            if(_produtos[i]->getId() == idProd){
+                _produtos[i]->adiciona_estoque(qtd);
+                break;
+            }
         }
     }
-}
 }
 
 void Sistema::consultaUsuarios(std::string *nome_atributos, std::string *valor_atributos, int numatributos) {
     int compatibilidade = 0, resutados = 1;
-    for(int i = 0; i < _numUsuarios; i++){
+    for(int i = 0; i < *_numUsuarios; i++){
         for(int j = 0; j < numatributos; j++){
             if(nome_atributos[j] == "id" && _usuarios[i]->getId() == std::stoi(valor_atributos[j]))
                 compatibilidade++;
@@ -156,7 +157,7 @@ void Sistema::consultaUsuarios(std::string *nome_atributos, std::string *valor_a
             int *qtdsProd = new int[quantidade_prod];
             int numProd = 0; //indice de acesso em idsPro e qtsProd
 
-            for (int j = 0; j < _numCompras; j++){
+            for (int j = 0; j < *_numCompras; j++){
                 if (_compras[j]->getIdUsuario() != idUsuario)
                     continue;
                 for (int k = 0; k < _compras[j]->getNumProdutos(); k++){
@@ -192,7 +193,7 @@ void Sistema::consultaUsuarios(std::string *nome_atributos, std::string *valor_a
 
 void Sistema::consultaProdutos(std::string *nome_atributos, std::string *valor_atributos, int numatributos){
     int compatibilidade = 0, resutados = 1;
-    for(int i = 0; i < _numProdutos; i++){
+    for(int i = 0; i < *_numProdutos; i++){
         for(int j = 0; j < numatributos; j++){
             if(nome_atributos[j] == "id" && _produtos[i]->getId() == std::stoi(valor_atributos[j]))
                 compatibilidade++;
@@ -211,11 +212,11 @@ void Sistema::consultaProdutos(std::string *nome_atributos, std::string *valor_a
             << _produtos[i]->getCategoria() << " " << _produtos[i]->getMarca() << " " << _produtos[i]->getCondicao() << std::endl;
 
             int idProduto = _produtos[i]->getId();
-            int *idsUsuario = new int[_numCompras + 1];
-            int *qtdsUsuario = new int[_numCompras + 1];
+            int *idsUsuario = new int[*_numCompras + 1];
+            int *qtdsUsuario = new int[*_numCompras + 1];
             int numUsuarios = 0;
 
-            for(int j = 0; j < _numCompras; j++){
+            for(int j = 0; j < *_numCompras; j++){
                     int pos_produto_compras = isIn(idProduto, _compras[j]->getIdProdutos(), _compras[j]->getNumProdutos());
                     if(pos_produto_compras == -1){continue;}
                     int pos_usuario_idsUsuario = isIn(_compras[j]->getIdUsuario(), idsUsuario, numUsuarios);
@@ -248,7 +249,7 @@ void Sistema::consultaProdutos(std::string *nome_atributos, std::string *valor_a
 
 void Sistema::consultaCompras(std::string *nome_atributos, std::string *valor_atributos, int numatributos){
     int compatibilidade = 0, resutados = 1;
-    for(int i=0; i<_numCompras; i++){
+    for(int i=0; i<*_numCompras; i++){
         for(int j=0; j<numatributos; j++){
             if(nome_atributos[j] == "id" && _compras[i]->getId() == std::stoi(valor_atributos[j]))
                 compatibilidade++;
@@ -284,7 +285,7 @@ void Sistema::consultaCompras(std::string *nome_atributos, std::string *valor_at
 
 void Sistema::consultaReposicoes(std::string *nome_atributos, std::string *valor_atributos, int numatributos){
     int compatibilidade = 0, resutados = 1;
-    for(int i=0; i<_numReposicoes; i++){
+    for(int i=0; i<*_numReposicoes; i++){
         for(int j=0; j<numatributos; j++){
             if(nome_atributos[j] == "id" && _reposicoes[i]->getId() == std::stoi(valor_atributos[j]))
                 compatibilidade++;
@@ -317,28 +318,6 @@ void Sistema::consultaReposicoes(std::string *nome_atributos, std::string *valor
 }
 
 
-//redimensionamento de vetores 
-//-------------------------------------------------------------------------------------------
-int *Sistema::redimensionarVetorInt(int *vetor, int numElementos) {
-    int *novoVetor = new int[numElementos + 10];
-    for (int i = 0; i < numElementos; i++) {
-        novoVetor[i] = vetor[i];
-    }
-    delete[] vetor;
-    return novoVetor;
-}
-
-std::string *Sistema::redimensionarVetorString(std::string *vetor, int numElementos) {
-    std::string *novoVetor = new std::string[numElementos + 10];
-    for (int i = 0; i < numElementos; i++) {
-        novoVetor[i] = vetor[i];
-    }
-    delete[] vetor;
-    return novoVetor;
-}
-
-//-------------------------------------------------------------------------------------------
-
 std::string **Sistema::coletaFiltros(std::stringstream& ss){
     int tam_atributos = TAM_MAX_INICIAL_VETORES, num_atributos = 0;
     std::string *nome_atributos = new std::string[tam_atributos];  // nome dos atributos requisitados
@@ -349,8 +328,8 @@ std::string **Sistema::coletaFiltros(std::stringstream& ss){
         std::string valor;
         ss >> valor;
         if (num_atributos == tam_atributos){
-            nome_atributos = redimensionarVetorString(nome_atributos, num_atributos);
-            valor_atributos = redimensionarVetorString(valor_atributos, num_atributos);
+            redimensionar<std::string>(nome_atributos, num_atributos);
+            redimensionar<std::string>(valor_atributos, num_atributos);
             tam_atributos += 10; // aumenta o valor de 10 em 10 para evitar desperdicio de memoria e custo computacional
         }
         nome_atributos[num_atributos] = atributo;
@@ -366,6 +345,41 @@ std::string **Sistema::coletaFiltros(std::stringstream& ss){
     return valores;
 }
 
-int Sistema::pesquisaPair(Pair *pairs, int valor, int inicio, int final) {
-    
+int *Sistema::pesquisaPair(Pair *pairs, std::string valor, int inicio, int final) {
+    int target = (inicio+final)/2;
+    if(pairs[target].getValor() == valor){
+        int current_target_back, current_target_front;
+        current_target_back = current_target_front = target;
+        while(pairs[current_target_back].getValor() == valor){
+            current_target_back--;   
+        }
+        while(pairs[current_target_front].getValor() == valor){
+            current_target_front--;   
+        }
+        int *pairs_found = new int[2];
+        pairs_found[0] = current_target_back;
+        pairs_found[1] = current_target_front;
+        return pairs_found;
+    }
+    else if(pairs[target].getValor() > valor){
+        pesquisaPair(pairs, valor, target+final/2, final);
+    }
+    else if(pairs[target].getValor() < valor){
+        pesquisaPair(pairs, valor, inicio+target/2, target);
+    }
+    return nullptr;
+}
+
+void Sistema::adicionaPair(Pair *pair, Pair par_adicionado, int *tamPair){
+    int target=0;
+    while(pair[target].getValor() <= par_adicionado.getValor()) {
+        target++;
+        if(target > *tamPair){
+            redimensionar(pair, *tamPair);
+            *tamPair+=10;
+            pair[target] = par_adicionado;
+            return;
+        }
+        
+    } 
 }
